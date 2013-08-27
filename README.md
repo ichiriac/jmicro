@@ -1,15 +1,29 @@
-jMicro.JS
+jMicro.js
 =========
 
-jMicro.JS - A minimalistic Javascript Framework that works like jQuery
+jMicro.js - A minimalistic Javascript Framework that works like jQuery
 
 This project was initialy born in Forp-UI :<br>
 https://github.com/aterrien/forp-ui
 
-Compatibility :<br>
-http://caniuse.com/queryselector
+## About the project
 
-## Sample :
+Compatibility :<br>
+IE 9, FF 3.5, CHROME, SAFARI, OPERA 10 (+ any mobile browser)
+
+Passing allmost all jQuery Core Unit Tests
+
+Runs without any conflict when jQuery or Prototype is loaded
+
+## About the size
+
+300 lines of code (without tricks)
+
+5.58Kb minified
+
+1.79Kb minified + gzipped
+
+## Sample
 
 ```html
 <!DOCTYPE html>
@@ -37,3 +51,19 @@ http://caniuse.com/queryselector
   </body>
 </html>
 ```
+
+## jMicro.js vs jQuery
+
+Actualy handling :
+* Selectors (of course!)
+* Attributes
+* Dom Manipulation
+* Styles
+* Classes
+* Events
+* Core : extend, each, get ... 
+
+Does not handle :
+* Ajax & Data Storage
+* Effects
+
