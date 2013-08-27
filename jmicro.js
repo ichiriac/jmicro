@@ -7,11 +7,26 @@
  */ 
 (function(w) {
     "use strict"
+    // commodity declaration
+    var undef = 'undefined';
+    // taken from jQuery : don't automatically add "px" to these possibly-unitless properties
+    var cssNumber = {
+        "columnCount": true,
+        "fillOpacity": true,
+        "fontWeight": true,
+        "lineHeight": true,
+        "opacity": true,
+        "order": true,
+        "orphans": true,
+        "widows": true,
+        "zIndex": true,
+        "zoom": true
+    }
     /**
      * Constructor
      */
-    w.jMicro = function(selector) {
-        return new $(selector);
+    w.jMicro = function(selector, attr) {
+        return new $(selector, attr);
     };
     /**
      * jMicro main class
@@ -20,7 +35,7 @@
         // list of current selected nodes
         selector: null, length: 0,
         // Constructor
-        construct: function(selector) {
+        construct: function(selector, attr) {
             var nodes = [];
             if ( !selector ) selector = [];
             if ( selector instanceof $ ) return selector;
@@ -30,13 +45,13 @@
                     var parent = w.document.createElement('DIV');
                     parent.innerHTML = strim;
                     nodes = parent.childNodes;
-                } else {
+                } else if(selector) {
                     this.selector = selector;
                     try {
                         nodes = document.querySelectorAll(selector);
-                    } catch(error) { console.warn(error); }
+                    } catch(error) { }
                 }
-            } else if( selector.nodeType ) {
+            } else if( selector.nodeType || selector == w ) {
                 nodes = [selector];
             } else {
                 nodes = selector;
@@ -45,11 +60,11 @@
             for(var i=0; i<nodes.length; i++) {
                 var node = nodes[i];
                 if ( node instanceof $ ) node = node[0];
-                if ( node.nodeType ) {
-                    this[this.length ++] = node;
-                } else {
-                    console.warn('bad node type', node);
-                }
+                this[this.length++] = node;
+            }
+            // populate childs with attributes
+            if ( attr ) {
+                for(var fn in attr) this[fn](attr[fn]);
             }
             return this;
         },
@@ -223,9 +238,58 @@
             return this;
         },
         // attributes
-        getClass: function(c) {
-            return this.getAttr("class");
+        attr: function(attr, val) {
+            if ( typeof val == undef ) {
+                if ( typeof attr == 'object') {
+                    for(var key in attr) this.attr(key, attr[key]);
+                    return this;
+                } else {
+                    return typeof this[0][attr] == undef ?
+                        this[0].getAttribute(attr) :
+                        this[0][attr]
+                    ;
+                }
+            }
+            return this.each(function() {
+                if ( attr in this || typeof this.getAttribute == undef ) {
+                    this[attr] = val;
+                } else {
+                    this.setAttribute(attr, val);
+                }
+            });
         },
+        /** attributes helpers **/
+        id: function(val) { return this.attr('id', val); },
+        class: function(val) { return this.attr('className', val); },
+        val: function(val) { return this.attr('value', val); },
+        /** css handlers **/
+        css: function(name, val) {
+            if ( typeof val == undef ) {
+                if ( typeof name == 'object') {
+                    for(var key in name) this.css(key, name[key]);
+                    return this;
+                } else {
+                    return this[0].style[name];
+                }
+            }
+            if (!isNaN(val) && !cssNumber[val]) val += 'px';
+            return this.each(function() {
+                this.style[name] = val;
+            });
+        },
+        height: function(val) {
+            return (typeof val != undef) ?
+                 this.css('height', val) :
+                 this[0].offsetHeight
+            ;
+        },
+        width: function(val) {
+            return (typeof val != undef) ?
+                 this.css('width', val) :
+                 this[0].offsetWidth
+            ;
+        },
+        /** Classes handlers **/
         addClass: function(c) {
             var cArr = c.split(" ");
             for (var i=0; i<cArr.length; i++) {
@@ -242,23 +306,6 @@
             }
             return this.attr("class", this.classes.join(" "));
         },
-        attr: function(attr, val) {
-            if ( typeof val == 'undefined' ) {
-                if ( typeof attr == 'object') {
-                    for(var key in attr) {
-                        this.attr(key, attr[key]);
-                    }
-                } else {
-                    this[0].getAttribute(attr);
-                }
-                return this;
-            }
-            var attr = w.document.createAttribute(attr);
-            attr.nodeValue = val;
-            return this.each(function() {
-                this.setAttribute(attr);
-            });
-        },
         top: function() {
             return this.getPosition().y;
         },
@@ -271,23 +318,7 @@
             }
             return {x: x, y: y};
         },
-        height: function() {
-            return this[0].offsetHeight;
-        },
-        width: function() {
-            return this[0].offsetWidth;
-        },
-        css: function(p, complete)
-        {
-            var transitionEnd = f.Normalizr.getEventTransitionEnd();
-            var _c = function() {
-                complete();
-                document.removeEventListener(transitionEnd, _c);
-            };
-            document.addEventListener(transitionEnd, _c);
-            this.attr("style", p);
-            return this;
-        },
+
         // dom traversal
         nextSibling: function() {
             return f.wrap(this.element.nextSibling);
