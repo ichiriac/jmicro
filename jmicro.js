@@ -11,30 +11,45 @@
      * Constructor
      */
     w.jMicro = function(selector) {
-        return new w.jMicro.fn.construct(selector);
+        return new $(selector);
     };
     /**
      * jMicro main class
      */
     w.jMicro.fn = w.jMicro.prototype = {
         // list of current selected nodes
-        nodes: null, selector: null,
+        selector: null, length: 0,
         // Constructor
         construct: function(selector) {
-            if ( selector instanceof w.jMicro.fn.construct ) return selector;
+            var nodes = [];
+            if ( !selector ) selector = [];
+            if ( selector instanceof $ ) return selector;
             if ( typeof(selector) == 'string' ) {
-                if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
+                var strim = selector.trim();
+                if (strim.charAt(0) == '<' && strim.charAt( strim.length - 1 ) == '>') {
                     var parent = w.document.createElement('DIV');
-                    parent.innerHTML = selector;
-                    this.nodes = parent.childNodes;
+                    parent.innerHTML = strim;
+                    nodes = parent.childNodes;
                 } else {
                     this.selector = selector;
-                    this.nodes = document.querySelectorAll(selector);
+                    try {
+                        nodes = document.querySelectorAll(selector);
+                    } catch(error) { console.warn(error); }
                 }
             } else if( selector.nodeType ) {
-                this.nodes = [selector];
+                nodes = [selector];
             } else {
-                this.nodes = selector;
+                nodes = selector;
+            }
+            // reacts as an array
+            for(var i=0; i<nodes.length; i++) {
+                var node = nodes[i];
+                if ( node instanceof $ ) node = node[0];
+                if ( node.nodeType ) {
+                    this[this.length ++] = node;
+                } else {
+                    console.warn('bad node type', node);
+                }
             }
             return this;
         },
@@ -45,15 +60,15 @@
         },
         // execute a closure on each node
         each: function(fn) {
-            var l = this.nodes.length;
-            for(var i=0; i <l; i++) {
-                var node = this.nodes[i];
-                if ( !node.nodeType ) {
-                    node = node.nodes[0];
-                }
+            for(var i=0; i<this.length; i++) {
+                var node = this[i];
                 fn.apply(node, [i, node]);
             }
             return this;
+        },
+        // gets a DOM node
+        get: function(index) {
+            return this[index];
         },
         // extends an object with another
         extend: function(obj1, obj2) {
@@ -169,7 +184,7 @@
             });
         },
         prepend: function(nodes) {
-            if (!(nodes instanceof w.jMicro.fn.construct)) nodes = new w.jMicro.fn.construct(nodes);
+            if (!(nodes instanceof $)) nodes = new $(nodes);
             return this.each(function() {
                 var self = this;
                 nodes.each(function() {
@@ -178,7 +193,7 @@
             });
         },
         append: function(nodes) {
-            if (!(nodes instanceof w.jMicro.fn.construct)) nodes = new w.jMicro.fn.construct(nodes);
+            if (!(nodes instanceof $)) nodes = new $(nodes);
             return this.each(function() {
                 var self = this;
                 nodes.each(function() {
@@ -187,7 +202,7 @@
             });
         },
         appendTo: function(nodes) {
-            if (!(nodes instanceof w.jMicro.fn.construct)) nodes = new w.jMicro.fn.construct(nodes);
+            if (!(nodes instanceof $)) nodes = new $(nodes);
             return this.each(function() {
                 var self = this;
                 nodes.each(function() {
@@ -234,7 +249,7 @@
                         this.attr(key, attr[key]);
                     }
                 } else {
-                    this.nodes[0].getAttribute(attr);
+                    this[0].getAttribute(attr);
                 }
                 return this;
             }
@@ -248,7 +263,7 @@
             return this.getPosition().y;
         },
         getPosition: function() {
-            var x = 0, y = 0, e = this.nodes[0];
+            var x = 0, y = 0, e = this[0];
             while(e){
                 x += e.offsetLeft;
                 y += e.offsetTop;
@@ -257,10 +272,10 @@
             return {x: x, y: y};
         },
         height: function() {
-            return this.nodes[0].offsetHeight;
+            return this[0].offsetHeight;
         },
         width: function() {
-            return this.nodes[0].offsetWidth;
+            return this[0].offsetWidth;
         },
         css: function(p, complete)
         {
@@ -285,17 +300,19 @@
         scrollBottom: function() {
             var max = 0;
             return this.each(function() {
-                if ( this.nodes[0].firstChild.offsetHeight > max) {
-                    max = this.nodes[0].firstChild.offsetHeight;
+                if ( this[0].firstChild.offsetHeight > max) {
+                    max = this[0].firstChild.offsetHeight;
                 }
             }).each(function() {
                 this.scrollTop = max;
             });
         },
         parent: function() {
-            return new w.jMicro.fn.construct(this.nodes[0].parentNode);
+            return new $(this[0].parentNode);
         }
     };
     // Gives the context to the constructor
     w.jMicro.fn.construct.prototype = w.jMicro.fn;
-})(window);
+    // Make it more easy for new or instanceof statements
+    var $ = w.jMicro.fn.construct;
+})(this);
