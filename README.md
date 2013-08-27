@@ -6,6 +6,23 @@ jMicro.js - A minimalistic Javascript Framework that works like jQuery
 This project was initialy born in Forp-UI :<br>
 https://github.com/aterrien/forp-ui
 
+## Why ?
+
+You may ask why I made this project and why should you use it ?
+
+1. Because it's lightweight
+
+If you want to distribute a script that has already a good weight, and you want
+to put jQuey inside it will take some 60Kb (minified+gzipped)
+
+2. To avoid conflicts
+
+If you want to provide a standalone widget, you can't handle simply jQuery 
+versions conflicts, and anyway, you will have load 2 versions of jQuery
+(back reason 1 - weight)
+
+3. Because coding is fun, and I love make things smaller :)
+
 ## About the project
 
 Compatibility :<br>
@@ -17,7 +34,7 @@ Runs without any conflict when jQuery or Prototype is loaded
 
 ## About the size
 
-300 lines of code (without tricks)
+300 lines of code (without any coding tricks)
 
 5.58Kb minified
 
