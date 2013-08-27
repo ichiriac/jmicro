@@ -1,5 +1,5 @@
 /**
- * Released under the MIT License (MIT)
+ * Released under the WTFPL License
  * Copyright (c) 2013
  *   Ioan Chiriac
  *   Anthony Terrien
