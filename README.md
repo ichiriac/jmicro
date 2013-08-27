@@ -80,7 +80,8 @@ Actualy handling :
 * Events
 * Core : extend, each, get ... 
 
-Does not handle :
+Does not handle* :
 * Ajax & Data Storage
 * Effects
 
+*(*will come soon as external components)*
