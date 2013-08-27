@@ -9,23 +9,15 @@
     <script type="text/javascript" src="../jmicro.js"></script>
     <script type="text/javascript">
         (function($) {
-          $('#hello').html('hello world');
-          $('#hello').click(function() {
-            console.log(this);
+          $('#hello').css({
+            border: 'solid 1px #0000ff',
+            padding: 8,
+            backgroundColor: '#ffaaaa'
+          })
+          .html('hello <b>world</b>')
+          .click(function() {
+            $(this).text('You clicked on me !');
           });
-          $('<p>here...</p>').appendTo(document.body);
-          $('<form>').append([
-            $('<p>').append([
-                $('<span>').text('Titre: '),
-                $('<input name="title" type="text">')
-            ]),
-            $('<p>').append([
-                $('<span>').text('Auteur: '),
-                $('<input>')
-            ])
-          ]).appendTo(
-            document.body
-          );
         })(jMicro);
     </script>
   </body>

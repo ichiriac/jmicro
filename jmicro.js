@@ -149,7 +149,7 @@
         // events : triggers the specified event
         trigger: function(event) {
             if(event.type) {
-                for(var fn in this.events[eventType]) {
+                for(var fn in this.events[event.type]) {
                     if (this.events[event.type][fn].apply(this, [event]) === false) return false;
                 }
             } else {
