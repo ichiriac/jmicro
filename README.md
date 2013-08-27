@@ -10,18 +10,18 @@ https://github.com/aterrien/forp-ui
 
 You may ask why I made this project and why should you use it ?
 
-1. Because it's lightweight
+1 - Because it's lightweight
 
 If you want to distribute a script that has already a good weight, and you want
 to put jQuey inside it will take some 60Kb (minified+gzipped)
 
-2. To avoid conflicts
+2 - To avoid conflicts
 
 If you want to provide a standalone widget, you can't handle simply jQuery 
 versions conflicts, and anyway, you will have load 2 versions of jQuery
 (back reason 1 - weight)
 
-3. Because coding is fun, and I love make things smaller :)
+3 - Because coding is fun, and I love make things smaller :)
 
 ## About the project
 
