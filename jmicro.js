@@ -85,22 +85,6 @@
         get: function(index) {
             return this[index];
         },
-        // extends an object with another
-        extend: function(obj1, obj2) {
-            for(var entry in obj2) {
-                if(obj2[entry] instanceof Object) {
-                    if(typeof obj2[entry] === 'function') {
-                        obj1[entry] = obj2[entry];
-                    } else {
-                        obj1[entry] = this.extend(obj1[entry], obj2[entry]);
-                    }
-                } else {
-                    (!obj1) && (obj1 = {});
-                    obj1[entry] = obj2[entry];
-                }
-            }
-            return obj1;
-        },
         // *** events ***
         on: function() {
             // @todo
@@ -344,6 +328,22 @@
     };
     // Gives the context to the constructor
     w.jMicro.fn.construct.prototype = w.jMicro.fn;
+    // extends an object with another
+    w.jMicro.extend = w.jMicro.fn.extend = function(obj1, obj2) {
+        for(var entry in obj2) {
+            if(obj2[entry] instanceof Object) {
+                if(typeof obj2[entry] === 'function') {
+                    obj1[entry] = obj2[entry];
+                } else {
+                    obj1[entry] = this.extend(obj1[entry], obj2[entry]);
+                }
+            } else {
+                (!obj1) && (obj1 = {});
+                obj1[entry] = obj2[entry];
+            }
+        }
+        return obj1;
+    };
     // Make it more easy for new or instanceof statements
     var $ = w.jMicro.fn.construct;
 })(this);
