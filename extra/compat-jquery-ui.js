@@ -6,7 +6,6 @@
 (function($) {
     // handles the compatibilities to be able to run jquery ui (or plugins)
     $.expr = { ':': {} };
-    $.support = {};
     // jQuery Core Helpers
     $.extend({
         isArray: Array.isArray,
