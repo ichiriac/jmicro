@@ -73,21 +73,21 @@ if ( typeof jMicro == 'undefined') {
             is: function(state) {
                 if ( state == ':visible' ) {
                     return this[0].style.display != 'none';
-                }
+                } // @todo switch other states : selected ...etc...
             },
-            // searching in current selected nodes
+            // searching in current first node
             find: function(selector) {
-                // @todo
-                return new w.jMicro.DOMElementWrapperCollection(this.element.querySelectorAll(s));
+                return new $(this[0].querySelectorAll(selector)); // @todo : handle each node ?
             },
             // gets a DOM node
             get: function(index) { return this[index]; },
             // *** events ***
-            on: function() {
-                // @todo
+            on: function(event, fn) {
+                return this.bind(event, fn);
             },
             live: function() {
                 // @todo
+                return this.bind(event, fn);
             },
             bind: function(event, fn) {
                 var self = this;
@@ -264,14 +264,10 @@ if ( typeof jMicro == 'undefined') {
                 });
             },
             show: function() {
-                return this.css({
-                    display: 'block'
-                });
+                return this.css({ display: 'block' });
             },
             hide: function() {
-                return this.css({
-                    display: 'none'
-                });
+                return this.css({ display: 'none' });
             },
             height: function(val) {
                 return (typeof val != undef) ?
@@ -308,36 +304,21 @@ if ( typeof jMicro == 'undefined') {
                 return this.attr("class", this.classes.join(" "));
             },
             top: function() {
-                return this.getPosition().y;
+                return this.offset().top;
             },
-            getPosition: function() {
-                var x = 0, y = 0, e = this[0];
-                while(e){
-                    x += e.offsetLeft;
-                    y += e.offsetTop;
-                    e = e.offsetParent;
+            left: function() {
+                return this.offset().left;
+            },
+            position: function() {
+                return {left: this[0].offsetLeft, top: this[0].offsetTop};
+            },
+            offset: function() {
+                var result = this.position(), e = this[0];
+                while(e = e.offsetParent) {
+                    result.left += e.offsetLeft;
+                    result.top += e.offsetTop;
                 }
-                return {x: x, y: y};
-            },
-
-            // dom traversal
-            nextSibling: function() {
-                return f.wrap(this.element.nextSibling);
-            },
-            addEventListener: function(listener) {
-                listener.target = this;
-                listener.init();
-                return this;
-            },
-            scrollBottom: function() {
-                var max = 0;
-                return this.each(function() {
-                    if ( this[0].firstChild.offsetHeight > max) {
-                        max = this[0].firstChild.offsetHeight;
-                    }
-                }).each(function() {
-                    this.scrollTop = max;
-                });
+                return result;
             },
             parent: function() {
                 return new $(this[0].parentNode);
@@ -352,7 +333,7 @@ if ( typeof jMicro == 'undefined') {
             if ( len == 1) {
                 for(var entry in arguments[0]) {
                     var obj = arguments[0][entry];
-                    if(deep && obj instanceof Object) {
+                    if(obj instanceof Object) {
                         w.jMicro[entry] = w.jMicro.extend(w.jMicro.fn[entry], obj);
                     } else {
                         w.jMicro[entry] = w.jMicro.fn[entry] = obj;
@@ -374,12 +355,8 @@ if ( typeof jMicro == 'undefined') {
             for(var i = start + 1; i < len; i++) {
                 var obj = arguments[i];
                 for(var entry in obj) {
-                    if(deep && obj[entry] instanceof Object && !(obj[entry] instanceof Document)) {
-                        if(typeof obj[entry] === 'function') {
-                            target[entry] = obj[entry];
-                        } else {
-                            target[entry] = this.extend(target[entry], obj[entry]);
-                        }
+                    if(deep && typeof obj[entry] != 'function' && obj[entry] instanceof Object && !(obj[entry] instanceof Document)) {
+                        target[entry] = this.extend(target[entry], obj[entry]);
                     } else {
                         target[entry] = obj[entry];
                     }
@@ -389,10 +366,6 @@ if ( typeof jMicro == 'undefined') {
         };
         // static functions
         w.jMicro.extend({
-            isArray: Array.isArray,
-            isPlainObject: function(obj) {
-                return obj instanceof Object && obj.nodeType == undef;
-            },
             each: function(scope, fn) {
                 if ( typeof fn == undef ) {
                     fn = scope;
