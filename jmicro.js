@@ -69,6 +69,12 @@ if ( typeof jMicro == 'undefined') {
                 }
                 return this;
             },
+            // check states
+            is: function(state) {
+                if ( state == ':visible' ) {
+                    return this[0].style.display != 'none';
+                }
+            },
             // searching in current selected nodes
             find: function(selector) {
                 // @todo
@@ -255,6 +261,16 @@ if ( typeof jMicro == 'undefined') {
                 if (!isNaN(val) && !cssNumber[val]) val += 'px';
                 return this.each(function() {
                     this.style[name] = val;
+                });
+            },
+            show: function() {
+                return this.css({
+                    display: 'block'
+                });
+            },
+            hide: function() {
+                return this.css({
+                    display: 'none'
                 });
             },
             height: function(val) {
