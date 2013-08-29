@@ -268,12 +268,16 @@
         outerWidth: function(val) { return this.width(val); },
         /** Classes handlers **/
         addClass: function(c) {
-            var cArr = c.split(" ");
-            for (var i=0; i<cArr.length; i++) {
-                if(f.inArray(cArr[i], this.classes)) return this;
-                this.classes.push(cArr[i]);
-            }
-            return this.attr("class", this.classes.join(" "));
+            var cArr = c.split(' '), l = cArr.length;
+            return this.each(function() {
+                var classes = this.className.split(' ');
+                for (var i=0; i<l; i++) {
+                    if ( classes.indexOf(cArr[i]) > -2 ) {
+                        classes.push(cArr[i]);
+                    }
+                }
+                this.className = classes.join(' ');
+            });
         },
         removeClass: function(c) {
             for (var k in this.classes) {
