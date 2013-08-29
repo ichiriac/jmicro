@@ -272,7 +272,7 @@
             return this.each(function() {
                 var classes = this.className.split(' ');
                 for (var i=0; i<l; i++) {
-                    if ( classes.indexOf(cArr[i]) > -2 ) {
+                    if ( classes.indexOf(cArr[i]) == -1 ) {
                         classes.push(cArr[i]);
                     }
                 }
