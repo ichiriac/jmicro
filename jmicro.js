@@ -333,7 +333,7 @@ if ( typeof jMicro == 'undefined') {
             if ( len == 1) {
                 for(var entry in arguments[0]) {
                     var obj = arguments[0][entry];
-                    if(obj instanceof Object) {
+                    if(typeof obj != 'function' && obj instanceof Object) {
                         w.jMicro[entry] = w.jMicro.extend(w.jMicro.fn[entry], obj);
                     } else {
                         w.jMicro[entry] = w.jMicro.fn[entry] = obj;
