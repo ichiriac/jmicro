@@ -169,7 +169,10 @@
         },
         text: function(value) {
             return this.each(function() {
-                this.innerText = value;
+                this.innerHTML = value
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                ;
             });
         },
         prepend: function(nodes) {
@@ -270,7 +273,7 @@
         addClass: function(c) {
             var cArr = c.split(' '), l = cArr.length;
             return this.each(function() {
-                var classes = this.className.split(' ');
+                var classes = this.className ? this.className.split(' ') : [];
                 for (var i=0; i<l; i++) {
                     if ( classes.indexOf(cArr[i]) == -1 ) {
                         classes.push(cArr[i]);
