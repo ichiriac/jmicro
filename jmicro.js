@@ -4,7 +4,7 @@
  *   Ioan Chiriac
  *   Anthony Terrien
  * @link https://github.com/ichiriac/jmicro.js
- */ 
+ */
 (function(w) {
     "use strict"
     // commodity declaration
@@ -73,18 +73,8 @@
             // @todo
             return new w.jMicro.DOMElementWrapperCollection(this.element.querySelectorAll(s));
         },
-        // execute a closure on each node
-        each: function(fn) {
-            for(var i=0; i<this.length; i++) {
-                var node = this[i];
-                fn.apply(node, [i, node]);
-            }
-            return this;
-        },
         // gets a DOM node
-        get: function(index) {
-            return this[index];
-        },
+        get: function(index) { return this[index]; },
         // *** events ***
         on: function() {
             // @todo
@@ -246,6 +236,8 @@
         id: function(val) { return this.attr('id', val); },
         class: function(val) { return this.attr('className', val); },
         val: function(val) { return this.attr('value', val); },
+        data: function(attr, val) { return this.attr(attr, val); },
+        removeData: function(attr) { return this.attr(attr, null); },
         /** css handlers **/
         css: function(name, val) {
             if ( typeof val == undef ) {
@@ -273,6 +265,7 @@
                  this[0].offsetWidth
             ;
         },
+        outerWidth: function(val) { return this.width(val); },
         /** Classes handlers **/
         addClass: function(c) {
             var cArr = c.split(" ");
@@ -329,21 +322,58 @@
     // Gives the context to the constructor
     w.jMicro.fn.construct.prototype = w.jMicro.fn;
     // extends an object with another
-    w.jMicro.extend = w.jMicro.fn.extend = function(obj1, obj2) {
-        for(var entry in obj2) {
-            if(obj2[entry] instanceof Object) {
-                if(typeof obj2[entry] === 'function') {
-                    obj1[entry] = obj2[entry];
+    w.jMicro.extend = w.jMicro.fn.extend = function() {
+        var len = arguments.length, target, start = 0;
+        var deep = false;
+        if ( len == 1) {
+            target = this;
+            arguments[len++] = arguments[0];
+        } else {
+            if ( arguments[0] === true ) {
+                deep = true;
+                start++;
+            }
+            target = arguments[start];
+            if (!target) target = {};
+        }
+        if ( arguments[len - 1] === true ) {
+            deep = true;
+            len--;
+        }
+        for(var i = start + 1; i < len; i++) {
+            var obj = arguments[i];
+            for(var entry in obj) {
+                if(deep && obj[entry] instanceof Object && !(obj[entry] instanceof Document)) {
+                    if(typeof obj[entry] === 'function') {
+                        target[entry] = obj[entry];
+                    } else {
+                        target[entry] = this.extend(target[entry], obj[entry]);
+                    }
                 } else {
-                    obj1[entry] = this.extend(obj1[entry], obj2[entry]);
+                    target[entry] = obj[entry];
                 }
-            } else {
-                (!obj1) && (obj1 = {});
-                obj1[entry] = obj2[entry];
             }
         }
-        return obj1;
+        return target;
     };
+    // static functions
+    w.jMicro.extend({
+        isArray: Array.isArray,
+        isPlainObject: function(obj) {
+            return obj instanceof Object && obj.nodeType == undef;
+        },
+        each: function(scope, fn) {
+            if ( typeof fn == undef ) {
+                fn = scope;
+                scope = this;
+            }
+            for(var i=0; i<scope.length; i++) {
+                var node = scope[i];
+                fn.apply(node, [i, node]);
+            }
+            return scope;
+        }
+    });
     // Make it more easy for new or instanceof statements
     var $ = w.jMicro.fn.construct;
 })(this);
