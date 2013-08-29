@@ -7,6 +7,8 @@
  */
 (function($) {
     // handles the compatibilities to be able to run jquery ui (or plugins)
-    $.expr = {};
+    $.expr = {
+        ':': {}
+    };
     $.support = {};
 })(jMicro);

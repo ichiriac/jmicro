@@ -8,9 +8,9 @@
 (function(w) {
     "use strict"
     // commodity declaration
-    var undef = 'undefined';
+    var undef = 'undefined',
     // taken from jQuery : don't automatically add "px" to these possibly-unitless properties
-    var cssNumber = {
+    cssNumber = {
         "columnCount": true,
         "fillOpacity": true,
         "fontWeight": true,
@@ -21,7 +21,7 @@
         "widows": true,
         "zIndex": true,
         "zoom": true
-    }
+    };
     /**
      * Constructor
      */
@@ -326,8 +326,15 @@
         var len = arguments.length, target, start = 0;
         var deep = false;
         if ( len == 1) {
-            target = this;
-            arguments[len++] = arguments[0];
+            for(var entry in arguments[0]) {
+                var obj = arguments[0][entry];
+                if(deep && obj instanceof Object) {
+                    w.jMicro[entry] = w.jMicro.extend(w.jMicro.fn[entry], obj);
+                } else {
+                    w.jMicro[entry] = w.jMicro.fn[entry] = obj;
+                }
+            }
+            return w.jMicro;
         } else {
             if ( arguments[0] === true ) {
                 deep = true;
