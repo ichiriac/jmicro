@@ -8,13 +8,7 @@
         xhr: function() {
             try {
                 return new XMLHttpRequest();
-            }catch(e){
-                try{
-                    return new ActiveXObject('Msxml2.XMLHTTP');
-                } catch(e) {
-                    return new ActiveXObject('Microsoft.XMLHTTP');
-                }
-            }
+            }catch(e) { }
         },
         send: function(url, method, headers, data, callback) {
             var xhr = this.xhr();
@@ -35,22 +29,25 @@
     };
     $.extend({
         support: {
-            cors: true
+            ajax: widget.xhr(),
+            cors: 'withCredentials' in widget.xhr()
         },
         ajax: function(options) {
             options = $.extend(true, {}, {
-                method: 'GET',
+                type: 'GET',
                 url: document.location.href,
-                headers: {},
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 success: function() { },
                 data: {}
             }, options);
-            if ( options.method == 'POST' ) {
+            if ( options.type == 'POST' ) {
                 options.headers['Content-type'] = 'application/x-www-form-urlencoded';
             }
             return widget.send(
                 options.url,
-                options.method,
+                options.type,
                 options.headers,
                 options.data,
                 { // ready states :
