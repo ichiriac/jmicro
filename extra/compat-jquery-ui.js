@@ -12,5 +12,13 @@
         isPlainObject: function(obj) {
             return obj instanceof Object && obj.nodeType == undef;
         },
+        hover: function( over, out ) {
+            return this
+                .on('mouseover', over)
+                .on('mouseout', out)
+            ;
+        },
+        ready: function( callback ) {
+        }
     });
 })(jMicro);
