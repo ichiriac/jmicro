@@ -314,6 +314,13 @@ if ( typeof jMicro == 'undefined') {
                     this.className = classes.join(' ');
                 });
             },
+            hasClass: function(c) {
+                for(var i = 0; i < this.length; i++) {
+                    var classes = this.className ? this.className.split(' ') : [];
+                    if ( classes.indexOf(c) > -1 ) return true;
+                }
+                return false;
+            },
             removeClass: function(c) {
                 for (var k in this.classes) {
                     if (this.classes[k] == c) {
