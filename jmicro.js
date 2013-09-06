@@ -265,8 +265,15 @@ if ( typeof jMicro == 'undefined') {
             id: function(val) { return this.attr('id', val); },
             class: function(val) { return this.attr('className', val); },
             val: function(val) { return this.attr('value', val); },
-            data: function(attr, val) { return this.attr(attr, val); },
-            removeData: function(attr) { return this.attr(attr, null); },
+            data: function(attr, val) {
+                if ( typeof val == undef ) {
+                    return this[0]['$' + attr];
+                }
+                return this.each(function() {
+                    this['$' + attr] = val;
+                });
+            },
+            removeData: function(attr) { return this.data(attr, null); },
             /** css handlers **/
             css: function(name, val) {
                 if ( typeof val == undef ) {
