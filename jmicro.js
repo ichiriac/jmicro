@@ -94,6 +94,12 @@ if ( typeof jMicro == 'undefined') {
                 });
                 return new $(nodes);
             },
+            replaceWith: function(content) {
+                this.prepend(content);
+                return this.each(function() {
+                    this.parentNode.removeChild(this);
+                });
+            },
             // *** events ***
             on: function(event, fn) {
                 return this.bind(event, fn);
