@@ -81,6 +81,19 @@ if ( typeof jMicro == 'undefined') {
             },
             // gets a DOM node
             get: function(index) { return this[index]; },
+            // update current array with the specified index
+            eq: function(index) {
+                this.length = 1;
+                this[0] = this.get(index);
+                return this;
+            },
+            clone: function() {
+                var nodes = [];
+                this.each(function() {
+                    nodes.push(this.cloneNode(true));
+                });
+                return new $(nodes);
+            },
             // *** events ***
             on: function(event, fn) {
                 return this.bind(event, fn);
@@ -258,7 +271,7 @@ if ( typeof jMicro == 'undefined') {
                         return this[0].style[name];
                     }
                 }
-                if (!isNaN(val) && !cssNumber[val]) val += 'px';
+                if (!isNaN(val) && !cssNumber[name]) val += 'px';
                 return this.each(function() {
                     this.style[name] = val;
                 });
@@ -309,7 +322,17 @@ if ( typeof jMicro == 'undefined') {
             left: function() {
                 return this.offset().left;
             },
-            position: function() {
+            position: function(value) {
+                if ( typeof value != undef ) {
+                    // @todo calculate the real position (now just center)
+                    return this.css({
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        marginLeft: -(this.width() / 2),
+                        marginTop: -(this.height() / 2)
+                    });
+                }
                 return {left: this[0].offsetLeft, top: this[0].offsetTop};
             },
             offset: function() {
