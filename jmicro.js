@@ -148,19 +148,14 @@ if ( typeof jMicro == 'undefined') {
             },
             // events : triggers the specified event
             trigger: function(event) {
-                if(event.type) {
-                    for(var fn in this.events[event.type]) {
-                        if (this.events[event.type][fn].apply(this, [event]) === false) return false;
-                    }
-                } else {
-                    return this.each(function() {
-                        if(this.events[event]) {
-                            for(var fn in this.events[event]) {
-                                this.events[event][fn].apply(this, [event]);
-                            }
+                var name = event.type ? event.type : event;
+                return this.each(function() {
+                    if(this.events && this.events[name]) {
+                        for(var fn in this.events[name]) {
+                            this.events[name][fn].apply(this, [event]);
                         }
-                    });
-                }
+                    }
+                });
             },
             // events helpers
             blur: function(fn) { return this.bind('blur', fn); },
@@ -353,9 +348,16 @@ if ( typeof jMicro == 'undefined') {
                         marginTop: -(this.height() / 2)
                     });
                 }
-                return {left: this[0].offsetLeft, top: this[0].offsetTop};
+                if ( this.length > 0 ) {
+                    return {left: this[0].offsetLeft, top: this[0].offsetTop};
+                } else {
+                    return { left: 0, top: 0 };
+                }
             },
             offset: function() {
+                if ( this.length == 0 ) return {
+                    left: 0, top: 0
+                };
                 var result = this.position(), e = this[0];
                 while(e = e.offsetParent) {
                     result.left += e.offsetLeft;
