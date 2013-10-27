@@ -41,11 +41,34 @@ if ( typeof jMicro == 'undefined') {
                 if ( !selector ) selector = [];
                 if ( selector instanceof $ ) return selector;
                 if ( typeof(selector) == 'string' ) {
-                    var strim = selector.trim();
-                    if (strim.charAt(0) == '<' && strim.charAt( strim.length - 1 ) == '>') {
-                        var parent = w.document.createElement('DIV');
-                        parent.innerHTML = strim;
-                        nodes = parent.childNodes;
+                    var strim = selector.trim(),
+                        striml = strim.length;
+                    if (strim.charAt(0) == '<' && strim.charAt(striml - 1) == '>') {
+
+                        var pnode = 'DIV';
+
+                        if(strim.indexOf("<t") == 0) {
+                            if(
+                                strim.indexOf("<tr>") == 0
+                                || strim.indexOf("<thead>") == 0
+                                || strim.indexOf("<tbody>") == 0
+                            ) {
+                                pnode = 'TABLE';
+                            } else if(
+                                strim.indexOf("<td>") == 0
+                                || strim.indexOf("<th>") == 0
+                            ) {
+                                pnode = 'TR';
+                            }
+                            var fragment = document.createDocumentFragment(),
+                            snode = strim.substring(1, striml - 1);
+                            fragment.appendChild(w.document.createElement(snode));
+                            nodes = fragment.childNodes;
+                        } else {
+                            var parent = w.document.createElement(pnode);
+                            parent.innerHTML = strim;
+                            nodes = parent.childNodes;
+                        }
                     } else if(selector) {
                         this.selector = selector;
                         try {
@@ -117,13 +140,13 @@ if ( typeof jMicro == 'undefined') {
                     if (this.addEventListener) {
                         this.addEventListener(
                             event,
-                            self.trigger,
+                            function(e) { self.trigger(e); },
                             false
                         );
                     } else if (this.attachEvent) {
                         this.attachEvent(
                             "on" + event,
-                            self.trigger
+                            function(e) { self.trigger(e); }
                         );
                     }
                 });
@@ -131,7 +154,7 @@ if ( typeof jMicro == 'undefined') {
             // events : removes the specified event
             unbind: function(event, fn) {
                 return this.each(function() {
-                    if(this.events[event]) {
+                    if(this.events && this.events[event]) {
                         if (this.removeEventListener) {
                             this.removeEventListener(event, fn, false);
                         } else if (this.detachEvent) {
@@ -180,8 +203,34 @@ if ( typeof jMicro == 'undefined') {
             focusin: function(fn) { return this.bind('focusin', fn); },
             focusout: function(fn) { return this.bind('focusout', fn); },
             load: function(fn) { return this.bind('load', fn); },
-            ready: function(fn) { return this.bind('ready', fn); },
             unload: function(fn) { return this.bind('unload', fn); },
+            ready: function(fn) {
+                /* Internet Explorer */
+                /*@cc_on
+                @if (@_win32 || @_win64)
+                document.write('<script id="ieScriptLoad" defer src="//:"><\/script>');
+                document.getElementById('ieScriptLoad').onreadystatechange = function() {
+                    if (this.readyState == 'complete') {
+                        fn();
+                    }
+                };
+                @end @*/
+                if (document.addEventListener) {
+                    /* Mozilla, Chrome, Opera */
+                    document.addEventListener('DOMContentLoaded', fn, false);
+                } else if (/KHTML|WebKit|iCab/i.test(navigator.userAgent)) {
+                    /* Safari, iCab, Konqueror */
+                    var DOMLoadTimer = setInterval(function () {
+                        if (/loaded|complete/i.test(document.readyState)) {
+                            fn();
+                            clearInterval(DOMLoadTimer);
+                        }
+                    }, 10);
+                } else {
+                    /* Other web browsers */
+                    window.onload = fn;
+                }
+            },
             // dom manipulation
             html: function(value) {
                 return this.each(function() {
@@ -232,7 +281,7 @@ if ( typeof jMicro == 'undefined') {
                 return this.html('');
             },
             insertAfter: function(element) {
-                this.element.parentNode.insertBefore( element.element, this.element.nextSibling );
+                this[0].parentNode.insertBefore( element[0], this[0].nextSibling );
                 return this;
             },
             // attributes
@@ -248,17 +297,14 @@ if ( typeof jMicro == 'undefined') {
                         ;
                     }
                 }
+
                 return this.each(function() {
-                    if ( attr in this || typeof this.getAttribute == undef ) {
-                        this[attr] = val;
-                    } else {
-                        this.setAttribute(attr, val);
-                    }
+                    this.setAttribute(attr, val);
                 });
             },
             /** attributes helpers **/
             id: function(val) { return this.attr('id', val); },
-            class: function(val) { return this.attr('className', val); },
+            class: function(val) { return this.attr('class', val); },
             val: function(val) { return this.attr('value', val); },
             data: function(attr, val) {
                 if ( typeof val == undef ) {
@@ -307,29 +353,23 @@ if ( typeof jMicro == 'undefined') {
             addClass: function(c) {
                 var cArr = c.split(' '), l = cArr.length;
                 return this.each(function() {
-                    var classes = this.className ? this.className.split(' ') : [];
                     for (var i=0; i<l; i++) {
-                        if ( classes.indexOf(cArr[i]) == -1 ) {
-                            classes.push(cArr[i]);
-                        }
+                        this.classList.add(cArr[i]);
                     }
-                    this.className = classes.join(' ');
                 });
+                return this;
             },
             hasClass: function(c) {
-                for(var i = 0; i < this.length; i++) {
-                    var classes = this.className ? this.className.split(' ') : [];
-                    if ( classes.indexOf(c) > -1 ) return true;
-                }
-                return false;
+                return this[0].classList.contains(c);
             },
             removeClass: function(c) {
-                for (var k in this.classes) {
-                    if (this.classes[k] == c) {
-                        this.classes.splice(k, 1);
+                return this.each(function() {
+                    for (var k in this.classList) {
+                        if (this.classList[k] == c) {
+                            this.classList.remove(c);
+                        }
                     }
-                }
-                return this.attr("class", this.classes.join(" "));
+                });
             },
             top: function() {
                 return this.offset().top;
