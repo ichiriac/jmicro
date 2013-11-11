@@ -407,6 +407,9 @@ if ( typeof jMicro == 'undefined') {
             },
             parent: function() {
                 return new $(this[0].parentNode);
+            },
+            next: function() {
+                return new $(this[0].nextSibling);
             }
         };
         // Gives the context to the constructor
