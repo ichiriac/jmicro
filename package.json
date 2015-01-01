@@ -2,7 +2,7 @@
     "name": "jmicro",
     "title": "jMicro",
     "description": "jQuery like lightweight JavaScript library",
-    "version": "0.0.1-beta",
+    "version": "0.0.2",
     "homepage": "http://github.com/ichiriac/jmicro",
     "author": [
         {

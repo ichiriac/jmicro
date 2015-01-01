@@ -1,0 +1,22 @@
+{
+  "name": "jmicro",
+  "main": "jmicro.js",
+  "version": "0.0.2",
+  "description": "jQuery like lightweight JavaScript library",
+  "keywords": [
+    "jquery",
+    "lightweight"
+  ],
+  "authors": [
+    "Ioan CHIRIAC"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ichiriac/jmicro",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
