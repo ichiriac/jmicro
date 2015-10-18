@@ -40,6 +40,9 @@
             }
             return s;
         },
+        done: function(fn) { return this.on('success', fn); },
+        fail: function(fn) { return this.on('error', fn); },
+        allways: function(fn) { return this.on('complete', fn); },
         ajax: function(options) {
             options = $.extend(true, {}, {
                 type: 'GET',
@@ -85,7 +88,7 @@
                 }
             };
             return xhr.on('readystatechange', function() {
-                $(this).trigger('ajaxComplete');
+                $(this).trigger('ajaxComplete').trigger('complete');
             });
         }
     });
