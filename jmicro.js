@@ -6,6 +6,43 @@
  * @link https://github.com/ichiriac/jmicro.js
  */
 if ( typeof jMicro == 'undefined') {
+
+    // IE compability helper
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function(obj, start) {
+            for (var i = (start || 0), j = this.length; i < j; i++) {
+                if (this[i] === obj) { return i; }
+            }
+            return -1;
+        }
+    }
+
+    // IE compability helper
+    if (!Function.prototype.bind) {
+      Function.prototype.bind = function(oThis) {
+        if (typeof this !== 'function') {
+          // closest thing possible to the ECMAScript 5
+          // internal IsCallable function
+          throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
+        }
+
+        var aArgs   = Array.prototype.slice.call(arguments, 1),
+            fToBind = this,
+            fNOP    = function() {},
+            fBound  = function() {
+              return fToBind.apply(this instanceof fNOP && oThis
+                     ? this
+                     : oThis,
+                     aArgs.concat(Array.prototype.slice.call(arguments)));
+            };
+
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+
+        return fBound;
+      };
+    }    
+
     (function(w) {
         "use strict"
         // commodity declaration
@@ -369,19 +406,37 @@ if ( typeof jMicro == 'undefined') {
                 var cArr = c.split(' '), l = cArr.length;
                 return this.each(function() {
                     for (var i=0; i<l; i++) {
-                        this.classList.add(cArr[i]);
+                        if (this.classList) {
+                            this.classList.add(cArr[i]);
+                        } else {
+                            if (this.className.indexOf(cArr[i]) === -1) {
+                                this.className += ' ' + cArr[i];
+                            }
+                        }
+                        
                     }
                 });
                 return this;
             },
             hasClass: function(c) {
-                return this[0].classList.contains(c);
+                if (this[0].classList) {
+                    return this[0].classList.contains(c);
+                } else {
+                    return this[0].className.indexOf(c) > -1;
+                }
             },
             removeClass: function(c) {
+                var cArr = c.split(' '), l = cArr.length;
                 return this.each(function() {
-                    for (var k in this.classList) {
-                        if (this.classList[k] == c) {
-                            this.classList.remove(c);
+                    for (var i=0; i<l; i++) {
+                        if ($(this).hasClass(cArr[i])) {
+                            if (this.classList) {
+                                this.classList.remove(cArr[i]);
+                            } else {
+                                cls = this.className.split(/\s/);
+                                cls.splice( cls.indexOf(cArr[i]), 1 );
+                                this.className = cls.join(' ');
+                            }
                         }
                     }
                 });
