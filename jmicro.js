@@ -124,14 +124,14 @@ if ( typeof jMicro == 'undefined') {
                 });
             },
             // *** events ***
-            on: function(event, fn) {
-                return this.bind(event, fn);
+            on: function(event, fn, capture) {
+                return this.bind(event, fn, capture);
             },
             live: function() {
                 // @todo
                 return this.bind(event, fn);
             },
-            bind: function(event, fn) {
+            bind: function(event, fn, capture) {
                 var self = this;
                 event = event.split(/\s/);
                 return this.each(function() {
@@ -144,30 +144,33 @@ if ( typeof jMicro == 'undefined') {
                             this.addEventListener(
                                 e,
                                 function(evt) { self.trigger(evt); },
-                                false
+                                capture === true
                             );
                         } else if (this.attachEvent) {
                             this.attachEvent(
                                 "on" + e,
                                 function(evt) { self.trigger(evt); }
                             );
+                            if (capture === true && this.setCapture) {
+                                this.setCapture(true);
+                            }
                         }
                     }
                 });
             },
             // disables an event
-            off: function(event, fn) {
-                return this.unbind(event, fn);
+            off: function(event, fn, capture) {
+                return this.unbind(event, fn, capture);
             },
             // events : removes the specified event
-            unbind: function(event, fn) {
+            unbind: function(event, fn, capture) {
                 event = event.split(/\s/);
                 return this.each(function() {
                     for(var i = 0; i < event.length; i++) {
                         var e = event[i];
                         if(this.events && this.events[e]) {
                             if (this.removeEventListener) {
-                                this.removeEventListener(e, fn, false);
+                                this.removeEventListener(e, fn, capture === true);
                             } else if (this.detachEvent) {
                                 this.detachEvent("on" + e, fn);
                             }
