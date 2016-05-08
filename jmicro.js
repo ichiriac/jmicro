@@ -319,7 +319,7 @@ if ( typeof jMicro == 'undefined') {
             },
             /** attributes helpers **/
             id: function(val) { return this.attr('id', val); },
-            class: function(val) { return this.attr('class', val); },
+            'class': function(val) { return this.attr('class', val); },
             val: function(val) { return this.attr('value', val); },
             data: function(attr, val) {
                 if ( typeof val == undef ) {
