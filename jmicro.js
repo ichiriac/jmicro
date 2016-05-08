@@ -75,6 +75,9 @@ if ( typeof jMicro == 'undefined') {
             // Constructor
             construct: function(selector, attr) {
                 var nodes = [];
+                if (typeof this === 'function') {
+                    return new this(selector, attr);
+                }
                 if ( !selector ) selector = [];
                 if ( selector instanceof $ ) return selector;
                 if ( typeof(selector) == 'string' ) {
