@@ -133,38 +133,50 @@ if ( typeof jMicro == 'undefined') {
             },
             bind: function(event, fn) {
                 var self = this;
+                event = event.split(/\s/);
                 return this.each(function() {
                     if(!this.events) this.events = {};
-                    if(!this.events[event]) this.events[event] = [];
-                    this.events[event].push(fn);
-                    if (this.addEventListener) {
-                        this.addEventListener(
-                            event,
-                            function(e) { self.trigger(e); },
-                            false
-                        );
-                    } else if (this.attachEvent) {
-                        this.attachEvent(
-                            "on" + event,
-                            function(e) { self.trigger(e); }
-                        );
+                    for(var i = 0; i < event.length; i++) {
+                        var e = event[i];
+                        if(!this.events[e]) this.events[e] = [];
+                        this.events[e].push(fn);
+                        if (this.addEventListener) {
+                            this.addEventListener(
+                                e,
+                                function(evt) { self.trigger(evt); },
+                                false
+                            );
+                        } else if (this.attachEvent) {
+                            this.attachEvent(
+                                "on" + e,
+                                function(evt) { self.trigger(evt); }
+                            );
+                        }
                     }
                 });
             },
+            // disables an event
+            off: function(event, fn) {
+                return this.unbind(event, fn);
+            },
             // events : removes the specified event
             unbind: function(event, fn) {
+                event = event.split(/\s/);
                 return this.each(function() {
-                    if(this.events && this.events[event]) {
-                        if (this.removeEventListener) {
-                            this.removeEventListener(event, fn, false);
-                        } else if (this.detachEvent) {
-                            this.detachEvent("on" + event, fn);
-                        }
-                        for(var i in this.events[event]) {
-                            if(this.events[event][i] == fn) {
-                                this.events[event].splice(i, 1);
-                                return this;
-                            };
+                    for(var i = 0; i < event.length; i++) {
+                        var e = event[i];
+                        if(this.events && this.events[e]) {
+                            if (this.removeEventListener) {
+                                this.removeEventListener(e, fn, false);
+                            } else if (this.detachEvent) {
+                                this.detachEvent("on" + e, fn);
+                            }
+                            for(var j in this.events[e]) {
+                                if(this.events[e][j] == fn) {
+                                    this.events[e].splice(j, 1);
+                                    return this;
+                                };
+                            }
                         }
                     }
                 });
