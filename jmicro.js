@@ -542,5 +542,5 @@ if ( typeof jMicro == 'undefined') {
         // Make it more easy for new or instanceof statements
         var $ = w.jMicro.fn.construct;
         w.jMicro.support = {};
-    })(this);
+    })((module && module.exports) || window);
 }
