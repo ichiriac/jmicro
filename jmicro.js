@@ -354,6 +354,9 @@ if ( typeof jMicro == 'undefined') {
                 }
 
                 return this.each(function() {
+                    if (typeof this[attr] != undef) {
+                        this[attr] = val;
+                    }
                     this.setAttribute(attr, val);
                 });
             },
